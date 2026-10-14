@@ -1,0 +1,30 @@
+import api from './api';
+import { NotificationType as Notification } from '../types/notification.types';
+
+export const notificationService = {
+  async getNotifications(): Promise<Notification[]> {
+    try {
+      const res = await api.get<{ notifications: Notification[] }>('/notifications');
+      return res.data.notifications ?? [];
+    } catch {
+      return [];
+    }
+  },
+
+  async markAsRead(id: string): Promise<void> {
+    await api.patch(`/notifications/${id}/read`);
+  },
+
+  async markAllRead(): Promise<void> {
+    await api.patch('/notifications/read-all');
+  },
+
+  async getUnreadCount(): Promise<number> {
+    try {
+      const res = await api.get<{ count: number }>('/notifications/unread-count');
+      return res.data.count ?? 0;
+    } catch {
+      return 0;
+    }
+  },
+};
